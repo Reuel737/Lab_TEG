@@ -2,13 +2,13 @@ import numpy as np
 import tensorflow as tf
 
 # Carrega dados e modelo
-data = np.load('result_fase2/exp15_run1/exp15_run1dataset.npz')
+data = np.load('result_fase2/exp16_run1/exp16_run1dataset.npz')
 xtrain = data['arr_0']
 xval   = data['arr_1']
 ytrain = data['arr_2']
 yval   = data['arr_3']
 
-model = tf.keras.models.load_model('result_fase2/exp15_run1/exp15_run1.keras')
+model = tf.keras.models.load_model('result_fase2/exp16_run1/exp16_run1.keras')
 
 targets = ['pressure', 'x-velocity', 'y-velocity', 'z-velocity', 'temperature',
            'incident-radiation', 'radiation-temperature', 'rad-heat-flux', 'vr']
@@ -39,7 +39,7 @@ print('='*75)
 print('\nSalvando em analise_por_variavel.csv...')
 
 import csv
-with open('analise_por_variavel.csv', 'w', newline='') as f:
+with open('analise_por_variavel16.csv', 'w', newline='') as f:
     writer = csv.writer(f)
     writer.writerow(['target', 'mse_train', 'mse_val', 'mae_val', 'r2_val'])
     for i, t in enumerate(targets):
