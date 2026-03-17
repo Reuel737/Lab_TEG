@@ -25,6 +25,8 @@ parser.add_argument("--LogDir", default=log_dir_def, type=str, help='maximum dep
 parser.add_argument("--HistCSV", default="hist_exp.csv", type=str, help='CSV file to save experiment summary')
 parser.add_argument("--Plot", action='store_true', help='Enable plot mode (default: False)')
 parser.add_argument("--L2", default=0.0, type=float, help='L2 regularization factor (0 = disabled)')
+parser.add_argument("--Fase4", action='store_true', help='Split por simulacao (CaseId) em vez de split aleatório')
+parser.add_argument("--TesteCases", default="36,37,38,39,40,41,42,43,44,45", type=str, help='CaseIds para teste na Fase 4')
  
  
 Layers    = [int(x) for x in str.split(parser.parse_args().Layers,' ')]
@@ -39,6 +41,8 @@ log_dir   = parser.parse_args().LogDir
 hist_csv  = parser.parse_args().HistCSV
 plot      = parser.parse_args().Plot
 l2_factor = parser.parse_args().L2
+fase4     = parser.parse_args().Fase4
+test_cases = [int(x) for x in parser.parse_args().TesteCases.split(',')]
  
 Dados = pd.read_pickle(DataFile)
 #Vars = ['x','y','z','Vel','Tinsu','Qinsu']
@@ -46,7 +50,16 @@ Dados = pd.read_pickle(DataFile)
 Vars = ['x-coordinate','y-coordinate','z-coordinate','Vel','Tinsu','Qinsu']
 Target = ['pressure','x-velocity','y-velocity','z-velocity','temperature','incident-radiation','radiation-temperature','rad-heat-flux','vr']
  
-xtrain,xval,ytrain,yval = train_test_split(Dados[Vars].to_numpy(),Dados[Target].to_numpy(),test_size=0.1)
+if fase4:
+    mask_test  = Dados['CaseId'].isin(test_cases)
+    mask_train = ~mask_test
+    xtrain = Dados.loc[mask_train, Vars].to_numpy()
+    ytrain = Dados.loc[mask_train, Target].to_numpy()
+    xval   = Dados.loc[mask_test,  Vars].to_numpy()
+    yval   = Dados.loc[mask_test,  Target].to_numpy()
+    print(f'Fase 4: treino={len(xtrain)} pontos (casos 1-{min(test_cases)-1}), teste={len(xval)} pontos (casos {test_cases})')
+else:
+    xtrain,xval,ytrain,yval = train_test_split(Dados[Vars].to_numpy(),Dados[Target].to_numpy(),test_size=0.1)
  
 np.savez(filename+'dataset.npz',xtrain,xval,ytrain,yval)
  
@@ -289,6 +302,7 @@ print(f"  Experimento   : {filename}")
 print(f"  Layers        : {Layers}")
 print(f"  MaxIter       : {maxiter}  |  BatchSize: {BatchSize}")
 print(f"  L2 factor     : {l2_factor}")
+print(f"  Fase 4        : {fase4}")
 print("-" * 52)
 print(f"  train_loss_final : {train_loss_final:.6f}")
 print(f"  val_loss_final   : {val_loss_final:.6f}")
@@ -302,7 +316,7 @@ hist_exists = os.path.isfile(hist_csv)
 with open(hist_csv, 'a', newline='') as f:
     writer = csv.writer(f)
     if not hist_exists:
-        writer.writerow(["timestamp","experimento","layers","maxiter","batchsize","l2","train_loss_final","val_loss_final","melhor_epoca","total_epocas"])
+        writer.writerow(["timestamp","experimento","layers","maxiter","batchsize","l2","fase4","train_loss_final","val_loss_final","melhor_epoca","total_epocas"])
     writer.writerow([
         datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         os.path.basename(filename),
@@ -310,6 +324,7 @@ with open(hist_csv, 'a', newline='') as f:
         maxiter,
         BatchSize,
         l2_factor,
+        fase4,
         round(train_loss_final, 6),
         round(val_loss_final, 6),
         melhor_epoca,
