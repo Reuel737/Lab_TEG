@@ -44,8 +44,8 @@ run_kfold() {
     echo " Concluído: $EXP"
 }
 
-run_kfold "exp08" "128 128 128 128 128"
-run_kfold "exp12" "256 256 256 256 256"
+# run_kfold "exp08" "128 128 128 128 128"
+# run_kfold "exp12" "256 256 256 256 256"
 run_kfold "exp13" "512 512"
 run_kfold "exp14" "512 512 512"
 
