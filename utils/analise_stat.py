@@ -43,30 +43,26 @@ for f in files:
     all_val.append(val)
 
 
-# =========================
-# 📊 GRÁFICOS
-# =========================
-
 # Boxplot comparação VAL
-plt.figure()
-plt.boxplot(all_val, labels=nomes)
-plt.title("Comparação VAL LOSS")
-plt.ylabel("Loss")
-plt.show()
+# plt.figure()
+# plt.boxplot(all_val, labels=nomes)
+# plt.title("Comparação VAL LOSS")
+# plt.ylabel("Loss")
+# plt.show()
 
-# Boxplot comparação TRAIN
-plt.figure()
-plt.boxplot(all_train, labels=nomes)
-plt.title("Comparação TRAIN LOSS")
-plt.ylabel("Loss")
-plt.show()
+# # Boxplot comparação TRAIN
+# plt.figure()
+# plt.boxplot(all_train, labels=nomes)
+# plt.title("Comparação TRAIN LOSS")
+# plt.ylabel("Loss")
+# plt.show()
 
-# Scatter train vs val (visual de overfitting)
-for i in range(len(files)):
-    plt.scatter(all_train[i], all_val[i], label=nomes[i])
+# # Scatter train vs val (visual de overfitting)
+# for i in range(len(files)):
+#     plt.scatter(all_train[i], all_val[i], label=nomes[i])
 
-plt.xlabel("Train Loss")
-plt.ylabel("Val Loss")
-plt.title("Train vs Val")
-plt.legend()
-plt.show()
+# plt.xlabel("Train Loss")
+# plt.ylabel("Val Loss")
+# plt.title("Train vs Val")
+# plt.legend()
+# plt.show()
