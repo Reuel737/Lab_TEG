@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 
 files = [
     "historico/hist_kfold_exp08.csv",
-    "historico/hist_kfold_exp12.csv"
+    "historico/hist_kfold_exp12.csv",
+    "historico/hist_kfold_exp14.csv",
 ]
 
 def analisar(file):
@@ -35,7 +36,7 @@ def analisar(file):
 
 all_train = []
 all_val = []
-nomes = ["exp08", "exp12"]
+nomes = ["exp08", "exp12", "exp14"]
 
 for f in files:
     train, val = analisar(f)
