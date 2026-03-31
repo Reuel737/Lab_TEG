@@ -47,7 +47,9 @@ run_kfold() {
 # run_kfold "exp08" "128 128 128 128 128"
 # run_kfold "exp12" "256 256 256 256 256"
 # run_kfold "exp13" "512 512"
-run_kfold "exp14" "512 512 512"
+# run_kfold "exp14" "512 512 512"
+run_kfold "exp15" "512 512 512 512"
+run_kfold "exp16" "512 512 512 512 512"
 
 echo ""
 echo "======================================================"
