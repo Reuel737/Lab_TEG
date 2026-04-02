@@ -6,7 +6,8 @@ files = [
     # "historico/hist_kfold_exp08.csv",
     "historico/hist_kfold_exp12.csv",
     # "historico/hist_kfold_exp14.csv",
-    "historico/hist_kfold_exp15.csv"
+    "historico/hist_kfold_exp15.csv",
+    "historico/hist_kfold_exp16.csv"
 ]
 
 def analisar(file):
@@ -37,7 +38,7 @@ def analisar(file):
 
 all_train = []
 all_val = []
-nomes = ["exp12", "exp15"]
+nomes = ["exp12", "exp15", "exp16"]
 
 for f in files:
     train, val = analisar(f)
@@ -45,26 +46,26 @@ for f in files:
     all_val.append(val)
 
 
-# # Boxplot comparação VAL
-# plt.figure()
-# plt.boxplot(all_val, labels=nomes)
-# plt.title("Comparação VAL LOSS")
-# plt.ylabel("Loss")
-# plt.show()
+# Boxplot comparação VAL
+plt.figure()
+plt.boxplot(all_val, labels=nomes)
+plt.title("Comparação VAL LOSS")
+plt.ylabel("Loss")
+plt.show()
 
-# # Boxplot comparação TRAIN
-# plt.figure()
-# plt.boxplot(all_train, labels=nomes)
-# plt.title("Comparação TRAIN LOSS")
-# plt.ylabel("Loss")
-# plt.show()
+# Boxplot comparação TRAIN
+plt.figure()
+plt.boxplot(all_train, labels=nomes)
+plt.title("Comparação TRAIN LOSS")
+plt.ylabel("Loss")
+plt.show()
 
-# # Scatter train vs val (visual de overfitting)
-# for i in range(len(files)):
-#     plt.scatter(all_train[i], all_val[i], label=nomes[i])
+# Scatter train vs val (visual de overfitting)
+for i in range(len(files)):
+    plt.scatter(all_train[i], all_val[i], label=nomes[i])
 
-# plt.xlabel("Train Loss")
-# plt.ylabel("Val Loss")
-# plt.title("Train vs Val")
-# plt.legend()
-# plt.show()
+plt.xlabel("Train Loss")
+plt.ylabel("Val Loss")
+plt.title("Train vs Val")
+plt.legend()
+plt.show()

@@ -16,7 +16,7 @@ run_kfold() {
     local LAYERS=$2
 
     local LOG_DIR="${LOGS_DIR}/${EXP}"
-    local OUTPUT="${RESULTS_DIR}/${EXP}"
+    local OUTPUT="${RESULTS_DIR}/${EXP}/${EXP}"
     local HISTCSV="historico/hist_kfold_${EXP}.csv"
 
     mkdir -p "$LOG_DIR"
@@ -49,7 +49,7 @@ run_kfold() {
 # run_kfold "exp13" "512 512"
 # run_kfold "exp14" "512 512 512"
 run_kfold "exp15" "512 512 512 512"
-run_kfold "exp16" "512 512 512 512 512"
+# run_kfold "exp16" "512 512 512 512 512"
 
 echo ""
 echo "======================================================"

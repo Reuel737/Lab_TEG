@@ -67,6 +67,10 @@ if not hist_exists:
 
 fold_val_losses = []
 
+# Variáveis para rastrear o melhor modelo globalmente
+best_global_val_loss = float('inf')
+best_fold = -1
+
 for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X), 1):
     xtrain, xval = X[train_idx], X[val_idx]
     ytrain, yval = Y[train_idx], Y[val_idx]
@@ -118,6 +122,18 @@ for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X), 1):
 
     fold_val_losses.append(val_loss_final)
 
+    # Identifica se este é o melhor fold até o momento
+    if val_loss_final < best_global_val_loss:
+        best_global_val_loss = val_loss_final
+        best_fold = fold_idx
+
+    # Salva o modelo e o dataset com o número do fold atual
+    model_filename = f"{filename}_fold{fold_idx:02d}.keras"
+    dataset_filename = f"{filename}_fold{fold_idx:02d}_dataset.npz"
+    
+    model.save(model_filename)
+    np.savez(dataset_filename, xtrain=xtrain, xval=xval, ytrain=ytrain, yval=yval)
+
     writer.writerow([
         datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         os.path.basename(filename),
@@ -149,4 +165,8 @@ print(f'  val_loss médio : {media:.4f}')
 print(f'  val_loss std   : {std:.4f}')
 print(f'  val_loss min   : {min(fold_val_losses):.4f}')
 print(f'  val_loss max   : {max(fold_val_losses):.4f}')
+print('-'*52)
+print(f'  MELHOR FOLD    : {best_fold:02d} (val_loss: {best_global_val_loss:.6f})')
+print(f'  Melhor Modelo  : {filename}_fold{best_fold:02d}.keras')
+print(f'  Melhor Dataset : {filename}_fold{best_fold:02d}_dataset.npz')
 print('='*52)
