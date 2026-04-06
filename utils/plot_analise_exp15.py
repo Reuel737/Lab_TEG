@@ -19,7 +19,7 @@
 # targets = ['pressure', 'x-velocity', 'y-velocity', 'z-velocity', 'temperature',
 #            'incident-radiation', 'radiation-temperature', 'rad-heat-flux', 'vr']
 
-# pasta_saida = "graficos_analise_exp15"
+# pasta_saida = "graficos/1_variavel_exp15"
 # os.makedirs(pasta_saida, exist_ok=True)
 
 # print(f"Gerando gráficos na pasta '{pasta_saida}'...")
@@ -30,7 +30,7 @@
 #     reais = yval[:, i]
 #     previstos = pred_val[:, i]
     
-#     plt.scatter(reais, previstos, alpha=0.3, color='blue', label='Predição')
+#     plt.scatter(reais, previstos, alpha=0.3, color='blue', label='Predição', s=10)
     
 #     min_val = min(reais.min(), previstos.min())
 #     max_val = max(reais.max(), previstos.max())
@@ -60,11 +60,12 @@ xval, yval = dados['xval'], dados['yval']
 model = load_model(modelo_path)
 pred_val = model.predict(xval)
 
-# Índices no seu array: 0 = pressure, 1 = x-velocity
+# targets = ['pressure', 'x-velocity', 'y-velocity', 'z-velocity', 'temperature',
+#            'incident-radiation', 'radiation-temperature', 'rad-heat-flux', 'vr']
 idx_var1 = 0 
-idx_var2 = 4 
+idx_var2 = 8 
 nome_var1 = 'Pressão'
-nome_var2 = 'Temperatura'
+nome_var2 = 'vr'
 
 pasta_saida = "graficos/2_variavel_exp15"
 os.makedirs(pasta_saida, exist_ok=True)
@@ -84,7 +85,7 @@ plt.ylabel(nome_var2)
 plt.legend()
 plt.grid(True)
 
-caminho_imagem = os.path.join(pasta_saida, f"relacao_{idx_var1}_vs_{idx_var2}.png")
+caminho_imagem = os.path.join(pasta_saida, f"relacao_{nome_var1}_vs_{nome_var2}.png")
 plt.savefig(caminho_imagem)
 plt.close()
 

@@ -6,7 +6,7 @@ from tensorflow.keras.models import load_model
 # 1. Caminho do modelo já treinado
 modelo_path = "result_fase5/exp15/exp15_fold14.keras"
 
-DATAFILE_NOVA_REGIAO = "dados_filtrados/pandas_regioes/transform-motorist-left-foot_cellcenter.pandas" 
+DATAFILE_NOVA_REGIAO = "dados_filtrados/pandas_regioes/transform-fp-head_cellcenter.pandas" 
 
 print(f"Carregando dados da nova região: {DATAFILE_NOVA_REGIAO}")
 dados = pd.read_pickle(DATAFILE_NOVA_REGIAO)  
