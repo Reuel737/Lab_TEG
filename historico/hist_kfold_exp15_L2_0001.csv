@@ -1,3 +1,0 @@
-timestamp,experimento,fold,layers,maxiter,batchsize,l2,train_loss_final,val_loss_final,melhor_epoca,total_epocas
-2026-04-06 15:03:45,exp15_L2_0001,1,"[512, 512, 512, 512]",5000,500,0.0001,0.92224,1.144416,4978,5000
-2026-04-06 16:25:30,exp15_L2_0001,2,"[512, 512, 512, 512]",5000,500,0.0001,0.909035,1.078742,4998,5000

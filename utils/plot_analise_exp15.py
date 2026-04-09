@@ -3,8 +3,8 @@
 # from tensorflow.keras.models import load_model
 # import os
 
-# modelo_path = "result_fase5/exp15/exp15_fold14.keras"
-# dataset_path = "result_fase5/exp15/exp15_fold14_dataset.npz"
+# modelo_path = "result_fase5/exp15_L2_0001/exp15_L2_0001_fold21.keras"
+# dataset_path = "result_fase5/exp15_L2_0001/exp15_L2_0001_fold21_dataset.npz"
 
 # print(f"Carregando dataset: {dataset_path}")
 # dados = np.load(dataset_path)
@@ -19,7 +19,7 @@
 # targets = ['pressure', 'x-velocity', 'y-velocity', 'z-velocity', 'temperature',
 #            'incident-radiation', 'radiation-temperature', 'rad-heat-flux', 'vr']
 
-# pasta_saida = "graficos/1_variavel_exp15"
+# pasta_saida = "graficos/1_variavel_exp15_L2_0001"
 # os.makedirs(pasta_saida, exist_ok=True)
 
 # print(f"Gerando gráficos na pasta '{pasta_saida}'...")
@@ -42,7 +42,7 @@
 #     plt.legend()
 #     plt.grid(True)
     
-#     plt.savefig(os.path.join(pasta_saida, f"{target}_analise.png"))
+#     plt.savefig(os.path.join(pasta_saida, f"{target}_analise_L2_0001.png"))
 #     plt.close()
 
 # print("Concluído!")
@@ -52,8 +52,8 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 import os
 
-modelo_path = "result_fase5/exp15/exp15_fold14.keras"
-dataset_path = "result_fase5/exp15/exp15_fold14_dataset.npz"
+modelo_path = "result_fase5/exp15_L2_0001/exp15_L2_0001_fold21.keras"
+dataset_path = "result_fase5/exp15_L2_0001/exp15_L2_0001_fold21_dataset.npz"
 
 dados = np.load(dataset_path)
 xval, yval = dados['xval'], dados['yval']
@@ -63,11 +63,11 @@ pred_val = model.predict(xval)
 # targets = ['pressure', 'x-velocity', 'y-velocity', 'z-velocity', 'temperature',
 #            'incident-radiation', 'radiation-temperature', 'rad-heat-flux', 'vr']
 idx_var1 = 0 
-idx_var2 = 8 
+idx_var2 = 4 
 nome_var1 = 'Pressão'
-nome_var2 = 'vr'
+nome_var2 = 'Temperatura'
 
-pasta_saida = "graficos/2_variavel_exp15"
+pasta_saida = "graficos/2_variavel_exp15_L2_0001"
 os.makedirs(pasta_saida, exist_ok=True)
 
 print("Gerando gráfico de acoplamento...")
@@ -85,7 +85,7 @@ plt.ylabel(nome_var2)
 plt.legend()
 plt.grid(True)
 
-caminho_imagem = os.path.join(pasta_saida, f"relacao_{nome_var1}_vs_{nome_var2}.png")
+caminho_imagem = os.path.join(pasta_saida, f"relacao_{nome_var1}_vs_{nome_var2}_L2_0001.png")
 plt.savefig(caminho_imagem)
 plt.close()
 
