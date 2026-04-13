@@ -36,7 +36,7 @@ run_kfold() {
         --DataFile "$DATAFILE" \
         --MaxIter $MAXITER \
         --BatchSize $BATCHSIZE \
-        --L2 0.0001 \
+        --L2 0.00001 \
         --KFolds $KFOLDS \
         --LogDir "$LOG_DIR" \
         --FileOutPut "$OUTPUT" \
@@ -49,8 +49,9 @@ run_kfold() {
 # run_kfold "exp12" "256 256 256 256 256"
 # run_kfold "exp13" "512 512"
 # run_kfold "exp14" "512 512 512"
-run_kfold "exp15" "512 512 512 512"
-run_kfold "exp15_L2_0001" "512 512 512 512"
+# run_kfold "exp15" "512 512 512 512"
+# run_kfold "exp15_L2_0001" "512 512 512 512"
+run_kfold "exp15_L2_00001" "512 512 512 512"
 # run_kfold "exp16" "512 512 512 512 512"
 
 echo ""
