@@ -3,8 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 files = [
-    "historico/hist_kfold_exp08.csv",
-    "historico/hist_kfold_exp12.csv"
+    # "historico/hist_kfold_exp08.csv",
+    "historico/hist_kfold_exp12.csv",
+    # "historico/hist_kfold_exp14.csv",
+    "historico/hist_kfold_exp15.csv",
+    "historico/hist_kfold_exp16.csv"
 ]
 
 def analisar(file):
@@ -35,7 +38,7 @@ def analisar(file):
 
 all_train = []
 all_val = []
-nomes = ["exp08", "exp12"]
+nomes = ["exp12", "exp15", "exp16"]
 
 for f in files:
     train, val = analisar(f)
@@ -65,10 +68,13 @@ plt.xlabel("Train Loss")
 plt.ylabel("Val Loss")
 plt.title("Train vs Val")
 plt.legend()
+<<<<<<< HEAD:utils/analise_stat.py
 plt.show()
 
 plt.hist(all_val)
 plt.show()
 
 plt.hist(all_train)
+=======
+>>>>>>> d61ff4ba3d93a406d63891e2350c8fdda3a4ec3c:analise/analise_stat.py
 plt.show()

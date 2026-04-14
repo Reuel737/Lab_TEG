@@ -12,16 +12,16 @@ import os, csv, datetime, argparse
 log_dir_def = "logs/fase5/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--Layers",     default="10 10")
-parser.add_argument("--DataFile",   default='dados_filtrados/pandas_regioes/transform-fp-head_cellcenter.pandas', type=str)
-parser.add_argument("--FileOutPut", default="result_fase5/exp", type=str)
-parser.add_argument("--MaxIter",    default=5000, type=int)
-parser.add_argument("--BatchSize",  default=500,  type=int)
-parser.add_argument("--LogDir",     default=log_dir_def, type=str)
-parser.add_argument("--HistCSV",    default="historico/hist_kfold.csv", type=str)
-parser.add_argument("--KFolds",     default=30, type=int)
-parser.add_argument("--L2",         default=0.0, type=float)
-parser.add_argument("--Acum",       default=None, type=int)
+parser.add_argument("--Layers",      default="10 10")
+parser.add_argument("--DataFile",    default='dados_filtrados/pandas_regioes/transform-fp-head_cellcenter.pandas', type=str)
+parser.add_argument("--FileOutPut",  default="result_fase5/exp", type=str)
+parser.add_argument("--MaxIter",     default=5000, type=int)
+parser.add_argument("--BatchSize",   default=500,  type=int)
+parser.add_argument("--LogDir",      default=log_dir_def, type=str)
+parser.add_argument("--HistCSV",     default="historico/hist_kfold.csv", type=str)
+parser.add_argument("--KFolds",      default=30, type=int)
+parser.add_argument("--L2",          default=0.0, type=float)
+parser.add_argument("--Acum",        default=None, type=int)
 
 args = parser.parse_args()
 Layers     = [int(x) for x in args.Layers.split()]
@@ -38,6 +38,7 @@ acum       = args.Acum
 os.makedirs(os.path.dirname(filename) if os.path.dirname(filename) else '.', exist_ok=True)
 os.makedirs(os.path.dirname(hist_csv)  if os.path.dirname(hist_csv)  else '.', exist_ok=True)
 
+# Lembre-se de mudar a Pressure para Vars se for rodar o modelo Físico no futuro!
 Vars   = ['x-coordinate','y-coordinate','z-coordinate','Vel','Tinsu','Qinsu']
 Target = ['pressure','x-velocity','y-velocity','z-velocity','temperature',
           'incident-radiation','radiation-temperature','rad-heat-flux','vr']
@@ -66,6 +67,10 @@ if not hist_exists:
                      'l2','train_loss_final','val_loss_final','melhor_epoca','total_epocas'])
 
 fold_val_losses = []
+
+# Variáveis para rastrear o melhor modelo globalmente
+best_global_val_loss = float('inf')
+best_fold = -1
 
 for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X), 1):
     xtrain, xval = X[train_idx], X[val_idx]
@@ -118,6 +123,35 @@ for fold_idx, (train_idx, val_idx) in enumerate(kf.split(X), 1):
 
     fold_val_losses.append(val_loss_final)
 
+    if val_loss_final < best_global_val_loss:
+        best_global_val_loss = val_loss_final
+        best_fold = fold_idx
+
+    # Salva o modelo e o dataset com o número do fold atual
+    model_filename = f"{filename}_fold{fold_idx:02d}.keras"
+    dataset_filename = f"{filename}_fold{fold_idx:02d}_dataset.npz"
+    
+    model.save(model_filename)
+    np.savez(dataset_filename, xtrain=xtrain, xval=xval, ytrain=ytrain, yval=yval)
+
+    # --- SALVAMENTO PARA O HISTOGRAMA CUMULATIVO E CURVA
+    
+    # 1. Faz a predição na fatia de validação (para não trapacear usando dados de treino)
+    y_pred = model.predict(xval, verbose=0)
+    
+    # 2. Calcula os erros absolutos ponto a ponto (os "losses" para o histograma)
+    erros_absolutos = np.abs(yval - y_pred)
+    
+    # 3. Salva a matriz de erros em um arquivo separado
+    erros_filename = f"{filename}_fold{fold_idx:02d}_erros.npz"
+    np.savez_compressed(erros_filename, erros=erros_absolutos)
+    
+    # 4. Salva o histórico (Curvas de Aprendizado)
+    history_filename = f"{filename}_fold{fold_idx:02d}_history.npz"
+    np.savez(history_filename, loss=history.history['loss'], val_loss=history.history['val_loss'])
+    
+    # =========================================================================
+
     writer.writerow([
         datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         os.path.basename(filename),
@@ -139,6 +173,7 @@ csv_file.close()
 
 media = np.mean(fold_val_losses)
 std   = np.std(fold_val_losses)
+np.savez(f"{filename}_fold_val_losses.npz", fold_val_losses=fold_val_losses)
 print('\n' + '='*52)
 print('  RESUMO K-FOLD')
 print('='*52)
@@ -149,4 +184,8 @@ print(f'  val_loss médio : {media:.4f}')
 print(f'  val_loss std   : {std:.4f}')
 print(f'  val_loss min   : {min(fold_val_losses):.4f}')
 print(f'  val_loss max   : {max(fold_val_losses):.4f}')
+print('-'*52)
+print(f'  MELHOR FOLD    : {best_fold:02d} (val_loss: {best_global_val_loss:.6f})')
+print(f'  Melhor Modelo  : {filename}_fold{best_fold:02d}.keras')
+print(f'  Melhor Dataset : {filename}_fold{best_fold:02d}_dataset.npz')
 print('='*52)
