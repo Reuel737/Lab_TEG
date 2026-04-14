@@ -68,4 +68,13 @@ plt.xlabel("Train Loss")
 plt.ylabel("Val Loss")
 plt.title("Train vs Val")
 plt.legend()
+<<<<<<< HEAD:utils/analise_stat.py
+plt.show()
+
+plt.hist(all_val)
+plt.show()
+
+plt.hist(all_train)
+=======
+>>>>>>> d61ff4ba3d93a406d63891e2350c8fdda3a4ec3c:analise/analise_stat.py
 plt.show()
