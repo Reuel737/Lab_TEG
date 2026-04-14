@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 import os
 
-modelo_path = "result_fp_head/exp15/exp15_fold04.keras"
-dataset_path = "result_fp_head/exp15/exp15_fold04_dataset.npz"
+experimento = "exp15_L2_00001"
+modelo_path = f"results/result_fp_head/{experimento}/{experimento}_fold04.keras"
+dataset_path = f"results/result_fp_head/{experimento}/{experimento}_fold04_dataset.npz"
 
 print("Carregando arquivos...")
 dados = np.load(dataset_path)
@@ -15,10 +16,10 @@ pred_val = model.predict(xval)
 # Índices das coordenadas X, Y, Z no array xval
 idx_x, idx_y, idx_z = 0, 1, 2
 
-idx_alvo = 0
-nome_alvo = 'P'
+idx_alvo = 4
+nome_alvo = 'T'
 
-pasta_saida = "graficos/heatmap"
+pasta_saida = f"graficos/heatmap/{experimento}"
 os.makedirs(pasta_saida, exist_ok=True)
 
 fig = plt.figure(figsize=(20, 6))
@@ -73,7 +74,7 @@ cbar2 = fig.colorbar(sc3, ax=ax3, fraction=0.03, pad=0.05)
 cbar2.set_label('Margem de Erro Absoluto')
 
 plt.tight_layout()
-caminho_imagem = os.path.join(pasta_saida, f"heatmap_{nome_alvo}_exp15.png")
+caminho_imagem = os.path.join(pasta_saida, f"heatmap_{nome_alvo}_{experimento}.png")
 plt.savefig(caminho_imagem)
 
 print(f"Gráfico salvo em '{caminho_imagem}'.")

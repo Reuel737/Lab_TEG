@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-arquivo_erros = "result_fase5/exp15/exp15_fold04_erros.npz"
+experimento = "exp15_L2_00001"
+arquivo_erros = f"results/result_fp_head/{experimento}/{experimento}_fold21_erros.npz"
 
 Target = ['pressure', 'x-velocity', 'y-velocity', 'z-velocity', 'temperature', 
           'incident-radiation', 'radiation-temperature', 'rad-heat-flux', 'vr']
@@ -47,7 +48,7 @@ plt.tight_layout()
 
 pasta_saida = "graficos/hist_cumulativo"
 os.makedirs(pasta_saida, exist_ok=True)
-caminho_imagem = os.path.join(pasta_saida, "hist_cumulativo_exp15.png")
+caminho_imagem = os.path.join(pasta_saida, f"hist_cumulativo_{experimento}.png")
 plt.savefig(caminho_imagem, dpi=300)
 
 plt.show()
