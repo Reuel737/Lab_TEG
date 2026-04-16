@@ -8,6 +8,7 @@ from tensorflow.keras.layers import Normalization
 from tensorflow.keras.callbacks import EarlyStopping, TensorBoard, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adam
 import os, csv, datetime, argparse
+from pathlib import Path
 
 log_dir_def = "logs/fase5/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
@@ -189,3 +190,33 @@ print(f'  MELHOR FOLD    : {best_fold:02d} (val_loss: {best_global_val_loss:.6f}
 print(f'  Melhor Modelo  : {filename}_fold{best_fold:02d}.keras')
 print(f'  Melhor Dataset : {filename}_fold{best_fold:02d}_dataset.npz')
 print('='*52)
+
+arquivo_registro = "regioes/melhores_modelos.csv"
+os.makedirs(os.path.dirname(arquivo_registro), exist_ok=True)
+
+# Tenta extrair o nome da região pelo caminho do DataFile (ex: 'fp-head')
+# Se não conseguir, usa o nome do arquivo original
+try:
+    nome_regiao = os.path.basename(DataFile).split('_')[0].split('-')[1] + '_' + os.path.basename(DataFile).split('_')[0].split('-')[2]
+except:
+    nome_regiao = os.path.basename(DataFile).replace('.pandas', '')
+
+nome_experimento = os.path.basename(filename)
+melhor_modelo_path = f"{filename}_fold{best_fold:02d}.keras"
+
+cabecalho_necessario = not os.path.exists(arquivo_registro)
+
+with open(arquivo_registro, mode='a', newline='') as f:
+    writer = csv.writer(f)
+    if cabecalho_necessario:
+        writer.writerow(['Data', 'Regiao', 'Experimento', 'Melhor_Fold', 'Val_Loss', 'L2_Factor', 'Caminho_Modelo'])
+    
+    writer.writerow([
+        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        nome_regiao,
+        nome_experimento,
+        f"Fold {best_fold:02d}",
+        round(best_global_val_loss, 6),
+        l2_factor,
+        melhor_modelo_path
+    ])

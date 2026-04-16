@@ -8,9 +8,11 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 import os
 
-experimento = "exp15_L2_00001"
-modelo_path = f"results/result_fp_head/{experimento}/{experimento}_fold21.keras"
-dataset_path = f"results/result_fp_head/{experimento}/{experimento}_fold21_dataset.npz"
+regiao = "regioes/fp_head"
+experimento = "exp15_L2_00001_fold21"
+nome_experimento = "exp15_L2_00001"
+modelo_path = f"{regiao}/results/{experimento}/{experimento}.keras"
+dataset_path = f"{regiao}/results/{experimento}/{experimento}_fold21_dataset.npz"
 
 print(f"Carregando dataset: {dataset_path}")
 dados = np.load(dataset_path)
@@ -25,7 +27,7 @@ pred_val = model.predict(xval)
 targets = ['pressure', 'x-velocity', 'y-velocity', 'z-velocity', 'temperature',
            'incident-radiation', 'radiation-temperature', 'rad-heat-flux', 'vr']
 
-pasta_saida = f"graficos/1_variavel/fp_head/{experimento}"
+pasta_saida = f"{regiao}/graficos/1_variavel/{experimento}"
 os.makedirs(pasta_saida, exist_ok=True)
 
 print(f"Gerando gráficos na pasta '{pasta_saida}'...")

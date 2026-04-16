@@ -8,9 +8,11 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 import os
 
-experimento = "exp15_L2_00001"
-modelo_path = f"results/result_fp_head/{experimento}/{experimento}_fold21.keras"
-dataset_path = f"results/result_fp_head/{experimento}/{experimento}_fold21_dataset.npz"
+regiao = "regioes/fp_head"
+experimento = "exp15_L2_00001_fold21"
+nome_experimento = "exp15_L2_00001"
+modelo_path = f"{regiao}/results/{experimento}/{experimento}.keras"
+dataset_path = f"{regiao}/results/{experimento}/{experimento}_fold21_dataset.npz"
 
 dados = np.load(dataset_path)
 xval, yval = dados['xval'], dados['yval']
@@ -20,11 +22,11 @@ pred_val = model.predict(xval)
 # targets = ['pressure', 'x-velocity', 'y-velocity', 'z-velocity', 'temperature',
 #            'incident-radiation', 'radiation-temperature', 'rad-heat-flux', 'vr']
 idx_var1 = 0
-idx_var2 = 2 
+idx_var2 = 4 
 nome_var1 = 'P'
-nome_var2 = 'Yvel'
+nome_var2 = 'T'
 
-pasta_saida = "graficos/2_variavel/fp_head/exp15_L2_00001"
+pasta_saida = f"{regiao}/graficos/2_variavel/exp15_L2_00001"
 os.makedirs(pasta_saida, exist_ok=True)
 
 print("Gerando gráfico de acoplamento...")
@@ -42,8 +44,6 @@ plt.ylabel(nome_var2)
 plt.legend()
 plt.grid(True)
 
-caminho_imagem = os.path.join(pasta_saida, f"relacao_{nome_var1}_vs_{nome_var2}_{experimento}.png")
+caminho_imagem = os.path.join(pasta_saida, f"relacao_{nome_var1}_vs_{nome_var2}_{nome_experimento}.png")
 plt.savefig(caminho_imagem)
 plt.close()
-
-print(f"Concluído! Salvo em '{caminho_imagem}'.")

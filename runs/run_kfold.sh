@@ -4,20 +4,20 @@ DATAFILE="dados_filtrados/pandas_regioes/transform-fp-head_cellcenter.pandas"
 MAXITER=5000
 BATCHSIZE=500
 KFOLDS=30
-RESULTS_DIR="results/result_fp_head"
-LOGS_DIR="logs/fp_head"
+REGIAO="fp_head"
+RESULTS_DIR="regioes/${REGIAO}/results"
+LOGS_DIR="regioes/${REGIAO}/logs"
 
 mkdir -p "$RESULTS_DIR"
 mkdir -p "$LOGS_DIR"
-mkdir -p "historico"
 
 run_kfold() {
     local EXP=$1
     local LAYERS=$2
 
     local LOG_DIR="${LOGS_DIR}/${EXP}"
-    local OUTPUT="${RESULTS_DIR}/${EXP}"
-    local HISTCSV="historico/hist_kfold_${EXP}.csv"
+    local OUTPUT="${RESULTS_DIR}/${EXP}/${EXP}"
+    local HISTCSV="regioes/${REGIAO}/historico/hist_kfold_${EXP}.csv"
 
     mkdir -p "$LOG_DIR"
     mkdir -p "$OUTPUT"
@@ -36,7 +36,6 @@ run_kfold() {
         --DataFile "$DATAFILE" \
         --MaxIter $MAXITER \
         --BatchSize $BATCHSIZE \
-        --L2 0.00001 \
         --KFolds $KFOLDS \
         --LogDir "$LOG_DIR" \
         --FileOutPut "$OUTPUT" \
@@ -45,18 +44,10 @@ run_kfold() {
     echo " Concluído: $EXP"
 }
 
-# run_kfold "exp08" "128 128 128 128 128"
-# run_kfold "exp12" "256 256 256 256 256"
-# run_kfold "exp13" "512 512"
-# run_kfold "exp14" "512 512 512"
-# run_kfold "exp15" "512 512 512 512"
-# run_kfold "exp15_L2_0001" "512 512 512 512"
-run_kfold "exp15_L2_00001" "512 512 512 512"
-# run_kfold "exp16" "512 512 512 512 512"
+run_kfold "512x4" "512 512 512 512"
 
 echo ""
 echo "======================================================"
-echo " Fase 5 concluída!"
 echo " Para visualizar no TensorBoard:"
 echo "   tensorboard --logdir $LOGS_DIR"
 echo "======================================================"
