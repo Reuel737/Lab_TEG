@@ -2,21 +2,18 @@
 
 DATAFILE="dados_filtrados/pandas_regioes/transform-fp-head_cellcenter.pandas"
 MAXITER=5000
-BATCHSIZE=500
+BATCHSIZE=256
 KFOLDS=30
 REGIAO="fp_head"
-RESULTS_DIR="regioes/${REGIAO}/results"
+RESULTS_DIR="regioes/${REGIAO}/results/${EXP}"
 LOGS_DIR="regioes/${REGIAO}/logs"
-
-mkdir -p "$RESULTS_DIR"
-mkdir -p "$LOGS_DIR"
 
 run_kfold() {
     local EXP=$1
     local LAYERS=$2
 
     local LOG_DIR="${LOGS_DIR}/${EXP}"
-    local OUTPUT="${RESULTS_DIR}/${EXP}/${EXP}"
+    local OUTPUT="${RESULTS_DIR}/${EXP}"
     local HISTCSV="regioes/${REGIAO}/historico/hist_kfold_${EXP}.csv"
 
     mkdir -p "$LOG_DIR"
