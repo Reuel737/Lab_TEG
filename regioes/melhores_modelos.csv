@@ -1,0 +1,5 @@
+Data,Regiao,Experimento,Melhor_Fold,Val_Loss,L2_Factor,Caminho_Modelo
+2026-04-19 10:20:27,fp_head,512x4_fp_head,Fold 21,0.298073,0.0,regioes/fp_head/results/512x4_fp_head/512x4_fp_head_fold21.keras
+2026-04-20 23:43:15,lrp_head,512x4_lrp_head,Fold 14,0.354357,0.0,regioes/lrp_head/results/512x4_lrp_head/512x4_lrp_head_fold14.keras
+2026-04-25 06:05:08,motorist_head,512x4_mt_head,Fold 11,0.197286,0.0,regioes/mt_head/results/512x4_mt_head_fold11.keras
+2026-04-27 08:07:10,motorist_core,512x4_mt_core,Fold 01,0.353876,0.0,regioes/mt_core/results/512x4_mt_core_fold01.keras

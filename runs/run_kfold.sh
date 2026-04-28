@@ -1,10 +1,10 @@
 #!/bin/bash
 
-DATAFILE="dados_filtrados/pandas_regioes/transform-fp-head_cellcenter.pandas"
+DATAFILE="dados_filtrados/pandas_regioes/transform-motorist-left-foot_cellcenter.pandas"
 MAXITER=5000
-BATCHSIZE=256
+BATCHSIZE=250
 KFOLDS=30
-REGIAO="fp_head"
+REGIAO="mt_l_foot"
 RESULTS_DIR="regioes/${REGIAO}/results/${EXP}"
 LOGS_DIR="regioes/${REGIAO}/logs"
 
@@ -41,7 +41,7 @@ run_kfold() {
     echo " Concluído: $EXP"
 }
 
-run_kfold "512x4" "512 512 512 512"
+run_kfold "512x4_mt_l_foot" "512 512 512 512"
 
 echo ""
 echo "======================================================"
