@@ -1,54 +1,109 @@
+#!/usr/bin/env python3
+"""
+Análise por variável (MSE, MAE, R²) para cada região registrada em
+regioes/melhores_modelos.csv.
+
+Uso:
+  python3 analise/analise_por_variavel.py                 # todas as regiões
+  python3 analise/analise_por_variavel.py fp_head mt_head # regiões específicas
+"""
+
+import sys
+import os
+import csv
 import numpy as np
 import tensorflow as tf
 
-# Carrega dados e modelo
-data = np.load('result_fase2/exp16_run1/exp16_run1dataset.npz')
-xtrain = data['arr_0']
-xval   = data['arr_1']
-ytrain = data['arr_2']
-yval   = data['arr_3']
+MELHORES_CSV = 'regioes/melhores_modelos.csv'
 
-model = tf.keras.models.load_model('result_fase2/exp16_run1/exp16_run1.keras')
+TARGETS = [
+    'pressure', 'x-velocity', 'y-velocity', 'z-velocity', 'temperature',
+    'incident-radiation', 'radiation-temperature', 'rad-heat-flux', 'vr',
+]
 
-targets = ['pressure', 'x-velocity', 'y-velocity', 'z-velocity', 'temperature',
-           'incident-radiation', 'radiation-temperature', 'rad-heat-flux', 'vr']
 
-# Predicoes
-pred_train = model.predict(xtrain, batch_size=500, verbose=0)
-pred_val   = model.predict(xval,   batch_size=500, verbose=0)
+def _parse_melhores(filtro=None):
+    import pandas as pd
+    df = pd.read_csv(MELHORES_CSV)
+    entradas = []
+    for _, row in df.iterrows():
+        caminho = os.path.normpath(row['Caminho_Modelo'])
+        partes   = caminho.split(os.sep)
+        regiao_dir = partes[1]
+        if filtro and regiao_dir not in filtro:
+            continue
+        fold = int(str(row['Melhor_Fold']).split()[-1])
+        results_dir = os.path.dirname(caminho)
+        basename    = os.path.basename(caminho)
+        prefix      = basename.replace(f'_fold{fold:02d}.keras', '')
+        entradas.append({
+            'regiao_dir':  regiao_dir,
+            'results_dir': results_dir,
+            'prefix':      prefix,
+            'fold':        fold,
+            'experimento': prefix,
+        })
+    return entradas
 
-print('\n' + '='*75)
-print('ANÁLISE POR VARIÁVEL — exp15_run1')
-print('='*75)
-print(f'{"Target":25s} | {"MSE train":>10} | {"MSE val":>10} | {"MAE val":>10} | {"R² val":>8}')
-print('-'*75)
 
-for i, t in enumerate(targets):
-    mse_t = np.mean((ytrain[:,i] - pred_train[:,i])**2)
-    mse_v = np.mean((yval[:,i]   - pred_val[:,i]  )**2)
-    mae_v = np.mean(np.abs(yval[:,i] - pred_val[:,i]))
-    
-    # R²
-    ss_res = np.sum((yval[:,i] - pred_val[:,i])**2)
-    ss_tot = np.sum((yval[:,i] - yval[:,i].mean())**2)
-    r2 = 1 - ss_res/ss_tot
-    
-    print(f'{t:25s} | {mse_t:>10.4f} | {mse_v:>10.4f} | {mae_v:>10.4f} | {r2:>8.4f}')
+def _metricas(yreal, ypred):
+    mse  = np.mean((yreal - ypred) ** 2)
+    mae  = np.mean(np.abs(yreal - ypred))
+    ss_r = np.sum((yreal - ypred) ** 2)
+    ss_t = np.sum((yreal - yreal.mean()) ** 2)
+    r2   = 1.0 - ss_r / ss_t if ss_t > 0 else float('nan')
+    return mse, mae, r2
 
-print('='*75)
-print('\nSalvando em analise_por_variavel.csv...')
 
-import csv
-with open('analise_por_variavel16.csv', 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerow(['target', 'mse_train', 'mse_val', 'mae_val', 'r2_val'])
-    for i, t in enumerate(targets):
-        mse_t = np.mean((ytrain[:,i] - pred_train[:,i])**2)
-        mse_v = np.mean((yval[:,i]   - pred_val[:,i]  )**2)
-        mae_v = np.mean(np.abs(yval[:,i] - pred_val[:,i]))
-        ss_res = np.sum((yval[:,i] - pred_val[:,i])**2)
-        ss_tot = np.sum((yval[:,i] - yval[:,i].mean())**2)
-        r2 = 1 - ss_res/ss_tot
-        writer.writerow([t, round(mse_t,6), round(mse_v,6), round(mae_v,6), round(r2,6)])
+def analisar(cfg):
+    rd, prefix, fold = cfg['results_dir'], cfg['prefix'], cfg['fold']
+    dataset_path = os.path.join(rd, f'{prefix}_fold{fold:02d}_dataset.npz')
+    model_path   = os.path.join(rd, f'{prefix}_fold{fold:02d}.keras')
 
-print('Salvo!')
+    if not os.path.isfile(dataset_path):
+        print(f'  [SKIP] dataset não encontrado: {dataset_path}')
+        return
+    if not os.path.isfile(model_path):
+        print(f'  [SKIP] modelo não encontrado: {model_path}')
+        return
+
+    d    = np.load(dataset_path)
+    xval = d['xval']
+    yval = d['yval']
+
+    model    = tf.keras.models.load_model(model_path)
+    pred_val = model.predict(xval, batch_size=2000, verbose=0)
+
+    print(f'\n{"="*75}')
+    print(f'  Região : {cfg["regiao_dir"]}  |  Exp: {cfg["experimento"]}  |  Fold {fold:02d}')
+    print(f'{"="*75}')
+    print(f'  {"Target":25s} | {"MSE val":>10} | {"MAE val":>10} | {"R² val":>8}')
+    print(f'  {"-"*63}')
+
+    rows = []
+    for i, t in enumerate(TARGETS):
+        mse, mae, r2 = _metricas(yval[:, i], pred_val[:, i])
+        print(f'  {t:25s} | {mse:>10.4f} | {mae:>10.4f} | {r2:>8.4f}')
+        rows.append([t, round(mse, 6), round(mae, 6), round(r2, 6)])
+
+    out_csv = os.path.join('regioes', cfg['regiao_dir'],
+                           f'analise_por_variavel_{cfg["experimento"]}.csv')
+    with open(out_csv, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['target', 'mse_val', 'mae_val', 'r2_val'])
+        writer.writerows(rows)
+    print(f'\n  Salvo em: {out_csv}')
+
+
+def main():
+    filtro  = sys.argv[1:] if len(sys.argv) > 1 else None
+    entradas = _parse_melhores(filtro)
+    if not entradas:
+        print('Nenhuma região encontrada. Verifique os argumentos ou o CSV.')
+        return
+    for cfg in entradas:
+        analisar(cfg)
+
+
+if __name__ == '__main__':
+    main()
